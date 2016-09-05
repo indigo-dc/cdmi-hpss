@@ -1,0 +1,64 @@
+{
+	"container_capabilities": {
+		"cdmi_capabilities_templates": true,
+		"cdmi_capabilities_exact_inherit": true,
+		"cdmi_data_redundancy": true,
+		"cdmi_geographic_placement": true,
+		"cdmi_latency": true,
+		"cdmi_capabilities_allowed": "/cdmi_capabilities/container/101 /cdmi_capabilities/container/102 /cdmi_capabilities/container/112"
+	},
+	"container_classes": {
+		"101": {
+			"cdmi_data_redundancy": 3,
+			"cdmi_geographic_placement": [
+				"DE"
+			],
+			"cdmi_latency": 100
+		},
+		"102": {
+			"cdmi_data_redundancy": 3,
+			"cdmi_geographic_placement": [
+				"DE"
+			],
+			"cdmi_latency": 100
+		},
+		"112": {
+			"cdmi_data_redundancy": 3,
+			"cdmi_geographic_placement": [
+				"DE"
+			],
+			"cdmi_latency": 100
+		}
+	},
+	"dataobject_capabilities": {
+		"cdmi_capabilities_templates": true,
+		"cdmi_capabilities_exact_inherit": true,
+		"cdmi_data_redundancy": true,
+		"cdmi_geographic_placement": true,
+		"cdmi_latency": true,
+		"cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/101 /cdmi_capabilities/dataobject/102 /cdmi_capabilities/dataobject/112"
+	},
+	"dataobject_classes": {
+		"101": {
+			"cdmi_data_redundancy": 3,
+			"cdmi_geographic_placement": [
+				"DE"
+			],
+			"cdmi_latency": 100
+		},
+		"102": {
+			"cdmi_data_redundancy": 3,
+			"cdmi_geographic_placement": [
+				"DE"
+			],
+			"cdmi_latency": 100
+		},
+		"112": {
+			"cdmi_data_redundancy": 3,
+			"cdmi_geographic_placement": [
+				"DE"
+			],
+			"cdmi_latency": 100
+		}
+	}
+}
