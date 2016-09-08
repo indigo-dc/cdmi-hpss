@@ -5,29 +5,17 @@
 		"cdmi_data_redundancy": true,
 		"cdmi_geographic_placement": true,
 		"cdmi_latency": true,
-		"cdmi_capabilities_allowed": "/cdmi_capabilities/container/101 /cdmi_capabilities/container/102 /cdmi_capabilities/container/112"
+		"cdmi_throughput": true,
+		"cdmi_capabilities_allowed": "/cdmi_capabilities/container/CosSmallFilesE2EDP"
 	},
 	"container_classes": {
-		"101": {
+		"CosSmallFilesE2EDP": {
 			"cdmi_data_redundancy": 3,
 			"cdmi_geographic_placement": [
 				"DE"
 			],
-			"cdmi_latency": 100
-		},
-		"102": {
-			"cdmi_data_redundancy": 3,
-			"cdmi_geographic_placement": [
-				"DE"
-			],
-			"cdmi_latency": 100
-		},
-		"112": {
-			"cdmi_data_redundancy": 3,
-			"cdmi_geographic_placement": [
-				"DE"
-			],
-			"cdmi_latency": 100
+			"cdmi_latency": 0,
+			"cdmi_throughput": 4194304
 		}
 	},
 	"dataobject_capabilities": {
@@ -36,29 +24,17 @@
 		"cdmi_data_redundancy": true,
 		"cdmi_geographic_placement": true,
 		"cdmi_latency": true,
-		"cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/101 /cdmi_capabilities/dataobject/102 /cdmi_capabilities/dataobject/112"
+		"cdmi_throughput": true,
+		"cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/CosSmallFilesE2EDP"
 	},
 	"dataobject_classes": {
-		"101": {
+		"CosSmallFilesE2EDP": {
 			"cdmi_data_redundancy": 3,
 			"cdmi_geographic_placement": [
 				"DE"
 			],
-			"cdmi_latency": 100
-		},
-		"102": {
-			"cdmi_data_redundancy": 3,
-			"cdmi_geographic_placement": [
-				"DE"
-			],
-			"cdmi_latency": 100
-		},
-		"112": {
-			"cdmi_data_redundancy": 3,
-			"cdmi_geographic_placement": [
-				"DE"
-			],
-			"cdmi_latency": 100
+			"cdmi_latency": 0,
+			"cdmi_throughput": 4194304
 		}
 	}
 }

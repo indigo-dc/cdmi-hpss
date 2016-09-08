@@ -101,11 +101,11 @@ public class HpssBackend implements StorageBackend {
 
     JSONObject json = hpssCdmi.getXattrsFromBackEnd(path);
 
-    String currentCapabilitiesUri = "/cdmi_capabilities/dataobject/102";
+    String currentCapabilitiesUri = "/cdmi_capabilities/dataobject/CosSmallFilesE2EDP";
     if (json != null) {
       String type = json.getString("Type");
       if (type.equals("Directory")) {
-        currentCapabilitiesUri = "/cdmi_capabilities/container/102";
+        currentCapabilitiesUri = "/cdmi_capabilities/container/CosSmallFilesE2EDP";
       }
     }
 
