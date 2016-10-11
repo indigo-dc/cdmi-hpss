@@ -25,10 +25,18 @@
 		"cdmi_geographic_placement": true,
 		"cdmi_latency": true,
 		"cdmi_throughput": true,
-		"cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/CosSmallFilesE2EDP"
+		"cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/TapeOnly /cdmi_capabilities/dataobject/DiskAndTape"
 	},
 	"dataobject_classes": {
-		"CosSmallFilesE2EDP": {
+		"TapeOnly": {
+			"cdmi_data_redundancy": 2,
+			"cdmi_geographic_placement": [
+				"DE"
+			],
+			"cdmi_latency": 50000,
+			"cdmi_throughput": 4194304
+		},
+		"DiskAndTape": {
 			"cdmi_data_redundancy": 3,
 			"cdmi_geographic_placement": [
 				"DE"

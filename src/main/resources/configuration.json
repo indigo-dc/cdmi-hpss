@@ -1,5 +1,9 @@
 {
 	"rest_user": "",
 	"rest_password": "",
-	"hpssgetxattrs": ""
+	"hpssgetxattrs": "",
+	"hpssstat": "",
+	"hpssgetvol": "",
+	"hpssstage": "",
+	"hpsspurge": ""
 }

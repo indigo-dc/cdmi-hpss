@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.kit.scc</groupId>
 	<artifactId>hpss-backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 
 	<packaging>jar</packaging>
 
@@ -125,7 +125,7 @@
 		<dependency>
 			<groupId>edu.kit.scc</groupId>
 			<artifactId>cdmi-spi</artifactId>
-			<version>0.2</version>
+			<version>0.3</version>
 		</dependency>
 		<!-- end::INDIGO[] -->
 		<!-- tag::Logging[] -->

@@ -71,7 +71,7 @@ public class HpssBackend implements StorageBackend {
       dataObjectCapabilities.put(key, jsonCapabilities.get(key));
     }
 
-    JSONObject dataObjectClasses = capabilities.getJSONObject("container_classes");
+    JSONObject dataObjectClasses = capabilities.getJSONObject("dataobject_classes");
     for (String key : dataObjectClasses.keySet()) {
       JSONObject dataObjectClass = dataObjectClasses.getJSONObject(key);
       log.debug("found {} capabilities class {}: {}", CapabilityType.DATAOBJECT, key,
@@ -101,20 +101,36 @@ public class HpssBackend implements StorageBackend {
 
     JSONObject json = hpssCdmi.getXattrsFromBackEnd(path);
 
-    String currentCapabilitiesUri = "/cdmi_capabilities/dataobject/CosSmallFilesE2EDP";
+    String currentCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
+    String targetCapabilitiesUri = null;
+    Map<String, Object> metadata = new HashMap<>();
+
     if (json != null) {
-      String type = json.getString("Type");
-      if (type.equals("Directory")) {
-        currentCapabilitiesUri = "/cdmi_capabilities/container/CosSmallFilesE2EDP";
+      if (json.has("Type")) {
+        String type = json.getString("Type");
+        if (type.equals("Directory")) {
+          currentCapabilitiesUri = "/cdmi_capabilities/container/CosSmallFilesE2EDP";
+        } else if (type.equals("File")) {
+          String bytesOnDisk = json.getString("BytesAtLevel[0]");
+          if (bytesOnDisk.equals("0bytes")) {
+            currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
+          }
+        }
+      } else if (json.has("hpssgetxattrs")) {
+        currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
+        targetCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
+        metadata.put("cdmi_recommended_polling_interval", 50000);
       }
     }
 
-    Map<String, Object> metadata = new HashMap<>();
     for (String key : json.keySet()) {
       metadata.put(key, json.get(key));
     }
 
-    return new CdmiObjectStatus(metadata, currentCapabilitiesUri, null);
+    CdmiObjectStatus currentStatus =
+        new CdmiObjectStatus(metadata, currentCapabilitiesUri, targetCapabilitiesUri);
+
+    return currentStatus;
   }
 
   @Override
