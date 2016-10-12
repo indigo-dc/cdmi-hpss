@@ -63,12 +63,36 @@ public class HpssCdmi {
   }
 
   /**
+   * Purges the file at the HPSS back-end for the given path.
+   * 
+   * @param path the path to the back-end file or directory
+   * @return a {@link JSONObject} with the result
+   */
+  public JSONObject purgeFromBackEnd(String path) {
+    return makeHpssRestCall("hpsspurge", path);
+  }
+
+  /**
+   * Stages the file at the HPSS back-end for the given path.
+   * 
+   * @param path the path to the back-end file or directory
+   * @return a {@link JSONObject} with the result
+   */
+  public JSONObject stageFromBackEnd(String path) {
+    return makeHpssRestCall("hpssstage", path);
+  }
+
+  /**
    * Gets the HPSS back-end xattrs for the given path.
    * 
    * @param path the path to the back-end file or directory
    * @return a {@link JSONObject} with the xattrs
    */
   public JSONObject getXattrsFromBackEnd(String path) {
+    return makeHpssRestCall("hpssgetxattrs", path);
+  }
+
+  private JSONObject makeHpssRestCall(String op, String path) {
     JSONObject configuration = new JSONObject();
 
     try {
@@ -91,7 +115,7 @@ public class HpssCdmi {
     }
 
 
-    String url = configuration.getString("hpssgetxattrs") + path;
+    String url = configuration.getString(op) + path;
     String str =
         configuration.getString("rest_user") + ":" + configuration.getString("rest_password");
 

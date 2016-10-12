@@ -1,5 +1,6 @@
 {
 	"container_capabilities": {
+	    "cdmi_export_container_webdav": true,
 		"cdmi_capabilities_templates": true,
 		"cdmi_capabilities_exact_inherit": true,
 		"cdmi_data_redundancy": true,

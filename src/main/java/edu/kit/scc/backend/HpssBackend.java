@@ -127,15 +127,62 @@ public class HpssBackend implements StorageBackend {
       metadata.put(key, json.get(key));
     }
 
+    JSONObject exports = new JSONObject();
+    exports.put("identifier", "/hpss");
+    exports.put("permissions", "domain");
+    HashMap<String, Object> exportAttributes = new HashMap<>();
+    exportAttributes.put("Network/WebDAV", exports);
     CdmiObjectStatus currentStatus =
         new CdmiObjectStatus(metadata, currentCapabilitiesUri, targetCapabilitiesUri);
-
+    currentStatus.setExportAttributes(exportAttributes);
     return currentStatus;
   }
 
   @Override
   public void updateCdmiObject(String path, String targetCapabilitiesUri) throws BackEndException {
-    throw new BackEndException("not supported");
+    CdmiObjectStatus currentStatus = getCurrentStatus(path);
+
+    if (currentStatus.getTargetCapabilitiesUri() != null) {
+      // object already in transition
+      String message = "object already in transition";
+      log.debug(message);
+      throw new BackEndException(message);
+    }
+
+    if (currentStatus.getCurrentCapabilitiesUri()
+        .equals("/cdmi_capabilities/container/CosSmallFilesE2EDP")) {
+      // QoS transition for containers not allowed
+      String message = "can not change QoS for containers";
+      log.debug(message);
+      throw new BackEndException(message);
+    }
+
+    if (currentStatus.getCurrentCapabilitiesUri()
+        .equals("/cdmi_capabilities/dataobject/DiskAndTape")
+        && targetCapabilitiesUri.equals("/cdmi_capabilities/dataobject/TapeOnly")) {
+      // purge
+      String message = "transition from " + currentStatus.getCurrentCapabilitiesUri() + " to "
+          + targetCapabilitiesUri;
+      log.debug(message);
+      log.debug("make purge on HPSS...");
+      JSONObject result = hpssCdmi.purgeFromBackEnd(path);
+      log.debug(result.toString());
+    } else if (currentStatus.getCurrentCapabilitiesUri()
+        .equals("/cdmi_capabilities/dataobject/TapeOnly")
+        && targetCapabilitiesUri.equals("/cdmi_capabilities/dataobject/DiskAndTape")) {
+      // stage
+      String message = "transition from " + currentStatus.getCurrentCapabilitiesUri() + " to "
+          + targetCapabilitiesUri;
+      log.debug(message);
+      log.debug("make stage on HPSS...");
+      JSONObject result = hpssCdmi.stageFromBackEnd(path);
+      log.debug(result.toString());
+    } else {
+      String message = "transition from " + currentStatus.getCurrentCapabilitiesUri() + " to "
+          + targetCapabilitiesUri + " not supported";
+      log.debug(message);
+      throw new BackEndException(message);
+    }
   }
 
 }
