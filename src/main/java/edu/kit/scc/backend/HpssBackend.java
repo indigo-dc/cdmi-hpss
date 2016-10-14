@@ -101,7 +101,7 @@ public class HpssBackend implements StorageBackend {
 
     JSONObject json = hpssCdmi.getXattrsFromBackEnd(path);
 
-    String currentCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
+    String currentCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskOnly";
     String targetCapabilitiesUri = null;
     Map<String, Object> metadata = new HashMap<>();
 
@@ -111,9 +111,15 @@ public class HpssBackend implements StorageBackend {
         if (type.equals("Directory")) {
           currentCapabilitiesUri = "/cdmi_capabilities/container/CosSmallFilesE2EDP";
         } else if (type.equals("File")) {
+
           String bytesOnDisk = json.getString("BytesAtLevel[0]");
-          if (bytesOnDisk.equals("0bytes")) {
+          String bytesOnTape1 = json.getString("BytesAtLevel[1]");
+          //String bytesOnTape2 = json.getString("BytesAtLevel[2]");
+
+          if (bytesOnDisk != null && bytesOnDisk.equals("0bytes")) {
             currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
+          } else if (bytesOnTape1 != null && !bytesOnTape1.equals("0bytes")) {
+            currentCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
           }
         }
       } else if (json.has("hpssgetxattrs")) {

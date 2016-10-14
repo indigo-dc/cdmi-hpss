@@ -1,13 +1,12 @@
 {
 	"container_capabilities": {
-	    "cdmi_export_container_webdav": true,
+		"cdmi_export_container_webdav": true,
 		"cdmi_capabilities_templates": true,
 		"cdmi_capabilities_exact_inherit": true,
 		"cdmi_data_redundancy": true,
 		"cdmi_geographic_placement": true,
 		"cdmi_latency": true,
-		"cdmi_throughput": true,
-		"cdmi_capabilities_allowed": "/cdmi_capabilities/container/CosSmallFilesE2EDP"
+		"cdmi_throughput": true
 	},
 	"container_classes": {
 		"CosSmallFilesE2EDP": {
@@ -25,8 +24,7 @@
 		"cdmi_data_redundancy": true,
 		"cdmi_geographic_placement": true,
 		"cdmi_latency": true,
-		"cdmi_throughput": true,
-		"cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/TapeOnly /cdmi_capabilities/dataobject/DiskAndTape"
+		"cdmi_throughput": true
 	},
 	"dataobject_classes": {
 		"TapeOnly": {
@@ -35,9 +33,19 @@
 				"DE"
 			],
 			"cdmi_latency": 50000,
-			"cdmi_throughput": 4194304
+			"cdmi_throughput": 4194304,
+			"cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/DiskAndTape"
 		},
 		"DiskAndTape": {
+			"cdmi_data_redundancy": 3,
+			"cdmi_geographic_placement": [
+				"DE"
+			],
+			"cdmi_latency": 0,
+			"cdmi_throughput": 4194304,
+			"cdmi_capabilities_allowed": "/cdmi_capabilities/dataobject/TapeOnly"
+		},
+		"DiskOnly": {
 			"cdmi_data_redundancy": 3,
 			"cdmi_geographic_placement": [
 				"DE"
