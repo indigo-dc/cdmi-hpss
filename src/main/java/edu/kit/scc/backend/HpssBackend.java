@@ -129,6 +129,8 @@ public class HpssBackend implements StorageBackend {
           currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
           targetCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
           metadata.put("cdmi_recommended_polling_interval", 50000);
+        } else if (msg.contains("error")) {
+          throw new BackEndException(msg);
         }
       }
     }
