@@ -114,7 +114,7 @@ public class HpssBackend implements StorageBackend {
 
           String bytesOnDisk = json.getString("BytesAtLevel[0]");
           String bytesOnTape1 = json.getString("BytesAtLevel[1]");
-          //String bytesOnTape2 = json.getString("BytesAtLevel[2]");
+          // String bytesOnTape2 = json.getString("BytesAtLevel[2]");
 
           if (bytesOnDisk != null && bytesOnDisk.equals("0bytes")) {
             currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
@@ -123,9 +123,13 @@ public class HpssBackend implements StorageBackend {
           }
         }
       } else if (json.has("hpssgetxattrs")) {
-        currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
-        targetCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
-        metadata.put("cdmi_recommended_polling_interval", 50000);
+        String msg = json.getString("hpssgetxattrs");
+        log.debug(msg);
+        if (msg.contains("staging")) {
+          currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
+          targetCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
+          metadata.put("cdmi_recommended_polling_interval", 50000);
+        }
       }
     }
 
