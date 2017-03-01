@@ -18,6 +18,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +62,16 @@ public class HpssCdmi {
     }
 
     return json;
+  }
+
+  /**
+   * Lists the files and directories at the HPSS back-end for the given path.
+   * 
+   * @param path the path to the back-end directory
+   * @return a {@link JSONObject} with the result
+   */
+  public JSONObject listDirectoryFromBackEnd(String path) {
+    return makeHpssRestCall("hpssls", path);
   }
 
   /**
@@ -144,27 +156,43 @@ public class HpssCdmi {
       }
       EntityUtils.consume(entity);
 
-      json = new JSONObject(stringBuffer.toString());
-      log.info(json.toString());
+      String content = stringBuffer.toString();
+      log.debug(content);
 
-    } catch (ClientProtocolException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      try {
+        json = new JSONObject(content);
+        log.info(json.toString());
+      } catch (JSONException ex) {
+        // ex.printStackTrace();
+        log.warn(ex.getMessage());
+      }
+      try {
+        JSONArray arr = new JSONArray(content);
+        json.put("children", arr);
+        log.info(json.toString());
+      } catch (JSONException ex) {
+        // ex.printStackTrace();
+        log.warn(ex.getMessage());
+      }
+    } catch (ClientProtocolException ex) {
+      // ex.printStackTrace();
+      log.warn(ex.getMessage());
+    } catch (IOException ex) {
+      // ex.printStackTrace();
+      log.warn(ex.getMessage());
     } finally {
       try {
         response.close();
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      } catch (IOException ex) {
+        // ex.printStackTrace();
+        log.warn(ex.getMessage());
       }
       if (buffReader != null) {
         try {
           buffReader.close();
-        } catch (IOException e) {
-          e.printStackTrace();
+        } catch (IOException ex) {
+          // ex.printStackTrace();
+          log.warn(ex.getMessage());
         }
       }
     }
