@@ -18,10 +18,16 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TimeZone;
 
 public class HpssBackend implements StorageBackend {
 
@@ -101,25 +107,63 @@ public class HpssBackend implements StorageBackend {
 
     JSONObject json = hpssCdmi.getXattrsFromBackEnd(path);
 
-    String currentCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskOnly";
+    String currentCapabilitiesUri = null;
     String targetCapabilitiesUri = null;
     Map<String, Object> metadata = new HashMap<>();
+    BackendCapability capability = null;
+    String associationTime = "";
 
     if (json != null) {
+      if (json.has("TimeModified")) {
+        String modificationTime = json.getString("TimeModified");
+        DateFormat inFormat = new SimpleDateFormat("EEEMMMddHH:mm:ssyyyy");
+        try {
+          Date date = inFormat.parse(modificationTime);
+          DateFormat outFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"); // UTC
+          TimeZone tz = TimeZone.getTimeZone("UTC");
+          outFormat.setTimeZone(tz);
+          associationTime = outFormat.format(date);
+        } catch (ParseException e) {
+          log.warn("Could not read modification time {}", modificationTime);
+        }
+      }
+
       if (json.has("Type")) {
         String type = json.getString("Type");
         if (type.equals("Directory")) {
+
           currentCapabilitiesUri = "/cdmi_capabilities/container/CosSmallFilesE2EDP";
+          capability =
+              backendCapabilities.stream().filter(b -> b.getType().equals(CapabilityType.CONTAINER)
+                  && b.getName().equals("CosSmallFilesE2EDP")).findFirst().get();
+
         } else if (type.equals("File")) {
 
           String bytesOnDisk = json.getString("BytesAtLevel[0]");
           String bytesOnTape1 = json.getString("BytesAtLevel[1]");
           // String bytesOnTape2 = json.getString("BytesAtLevel[2]");
 
-          if (bytesOnDisk != null && bytesOnDisk.equals("0bytes")) {
-            currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
-          } else if (bytesOnTape1 != null && !bytesOnTape1.equals("0bytes")) {
-            currentCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
+          if (bytesOnTape1 != null && !bytesOnTape1.equals("0bytes")) {
+            if (bytesOnDisk != null && !bytesOnDisk.equals("0bytes")) {
+              currentCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
+              capability = backendCapabilities.stream()
+                  .filter(b -> b.getType().equals(CapabilityType.DATAOBJECT)
+                      && b.getName().equals("DiskAndTape"))
+                  .findFirst().get();
+            } else {
+              currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
+              capability = backendCapabilities.stream()
+                  .filter(b -> b.getType().equals(CapabilityType.DATAOBJECT)
+                      && b.getName().equals("TapeOnly"))
+                  .findFirst().get();
+            }
+
+          } else {
+            currentCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskOnly";
+            capability = backendCapabilities.stream()
+                .filter(b -> b.getType().equals(CapabilityType.DATAOBJECT)
+                    && b.getName().equals("DiskOnly"))
+                .findFirst().get();
           }
         }
       } else if (json.has("hpssgetxattrs")) {
@@ -127,17 +171,31 @@ public class HpssBackend implements StorageBackend {
         log.debug(msg);
         if (msg.contains("staging")) {
           currentCapabilitiesUri = "/cdmi_capabilities/dataobject/TapeOnly";
+          capability = backendCapabilities.stream().filter(
+              b -> b.getType().equals(CapabilityType.DATAOBJECT) && b.getName().equals("TapeOnly"))
+              .findFirst().get();
+
           targetCapabilitiesUri = "/cdmi_capabilities/dataobject/DiskAndTape";
-          metadata.put("cdmi_recommended_polling_interval", 50000);
-        } else if (msg.contains("error")) {
-          throw new BackEndException(msg);
+          metadata.put("cdmi_recommended_polling_interval", "50000");
         }
+      } else {
+        throw new BackEndException();
+      }
+    } else {
+      throw new BackEndException();
+    }
+
+    // for (String key : json.keySet()) {
+    // metadata.put(key, json.get(key));
+    // }
+
+    if (capability != null) {
+      for (Entry<String, Object> e : capability.getMetadata().entrySet()) {
+        metadata.put(e.getKey() + "_provided", e.getValue());
       }
     }
 
-    for (String key : json.keySet()) {
-      metadata.put(key, json.get(key));
-    }
+    metadata.put("cdmi_capability_association_time", associationTime);
 
     JSONObject exports = new JSONObject();
     exports.put("identifier", "/hpss");
@@ -147,6 +205,7 @@ public class HpssBackend implements StorageBackend {
     CdmiObjectStatus currentStatus =
         new CdmiObjectStatus(metadata, currentCapabilitiesUri, targetCapabilitiesUri);
     currentStatus.setExportAttributes(exportAttributes);
+
     return currentStatus;
   }
 
