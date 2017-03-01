@@ -14,6 +14,7 @@ import org.indigo.cdmi.BackendCapability;
 import org.indigo.cdmi.BackendCapability.CapabilityType;
 import org.indigo.cdmi.CdmiObjectStatus;
 import org.indigo.cdmi.spi.StorageBackend;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +112,7 @@ public class HpssBackend implements StorageBackend {
     String targetCapabilitiesUri = null;
     Map<String, Object> metadata = new HashMap<>();
     BackendCapability capability = null;
+    List<String> children = new ArrayList<>();
     String associationTime = "";
 
     if (json != null) {
@@ -136,6 +138,12 @@ public class HpssBackend implements StorageBackend {
           capability =
               backendCapabilities.stream().filter(b -> b.getType().equals(CapabilityType.CONTAINER)
                   && b.getName().equals("CosSmallFilesE2EDP")).findFirst().get();
+
+          JSONObject childrenJson = hpssCdmi.listDirectoryFromBackEnd(path);
+          log.debug(childrenJson.toString());
+
+          JSONArray childrenArray = childrenJson.getJSONArray("children");
+          childrenArray.forEach(c -> children.add(String.valueOf(c)));
 
         } else if (type.equals("File")) {
 
@@ -205,6 +213,10 @@ public class HpssBackend implements StorageBackend {
     CdmiObjectStatus currentStatus =
         new CdmiObjectStatus(metadata, currentCapabilitiesUri, targetCapabilitiesUri);
     currentStatus.setExportAttributes(exportAttributes);
+
+    if (!children.isEmpty()) {
+      currentStatus.setChildren(children);
+    }
 
     return currentStatus;
   }
