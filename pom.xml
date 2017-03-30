@@ -67,7 +67,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skipTests>true</skipTests>
-					<!-- <includes> <include>edu.kit.scc.test.TestSuite.java</include> </includes> -->
+					<includes>
+						<include>edu.kit.scc.test.TestSuite.java</include>
+					</includes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -147,6 +149,15 @@
 			<version>20160810</version>
 		</dependency>
 		<!-- end::HTTP[] -->
+		
+		<!-- tag::Test[] -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+			<!-- end::Test[] -->
+		</dependency>
 	</dependencies>
 
 </project>
