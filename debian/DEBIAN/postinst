@@ -1,0 +1,10 @@
+#!/bin/sh
+
+NAME=cdmi-hpss
+VERSION=0.1
+
+if [ -f /var/lib/$NAME/$NAME-$VERSION-jar-with-dependencies.jar ]; then
+    for path in `find / -path "*/jre/lib/ext" 2>/dev/null`; do
+        cp /var/lib/$NAME/$NAME-$VERSION-jar-with-dependencies.jar $path
+    done
+fi

@@ -28,11 +28,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 
 public class HpssCdmi {
 
   private static final Logger log = LoggerFactory.getLogger(HpssCdmi.class);
+
+  private static final String DEFAULT_CONFIG_PATH = "/etc/cdmi-server/plugins";
 
   /**
    * Reads this HPSS back-end capabilities from a config file.
@@ -41,10 +46,19 @@ public class HpssCdmi {
    */
   public JSONObject readCapabilitiesFromConfig() {
     JSONObject json = new JSONObject();
+    InputStream in = null;
+
+    String configurationPath = System.getProperty("cdmi.hpss.config", DEFAULT_CONFIG_PATH);
 
     try {
 
-      InputStream in = getClass().getResourceAsStream("/capabilities.json");
+      Path configPath = Paths.get(configurationPath, "capabilities.json");
+      if (Files.exists(configPath)) {
+        in = Files.newInputStream(configPath);
+      } else {
+        in = getClass().getResourceAsStream("/capabilities.json");
+      }
+
       BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
       StringBuffer stringBuffer = new StringBuffer();
@@ -106,10 +120,18 @@ public class HpssCdmi {
 
   private JSONObject makeHpssRestCall(String op, String path) {
     JSONObject configuration = new JSONObject();
+    InputStream in = null;
 
+    String configurationPath = System.getProperty("cdmi.hpss.config", DEFAULT_CONFIG_PATH);
     try {
 
-      InputStream in = getClass().getResourceAsStream("/configuration.json");
+      Path configPath = Paths.get(configurationPath, "configuration.json");
+      if (Files.exists(configPath)) {
+        in = Files.newInputStream(configPath);
+      } else {
+        in = getClass().getResourceAsStream("/configuration.json");
+      }
+
       BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
       StringBuffer stringBuffer = new StringBuffer();
