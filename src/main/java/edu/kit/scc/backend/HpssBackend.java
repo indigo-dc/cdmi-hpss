@@ -36,6 +36,8 @@ public class HpssBackend implements StorageBackend {
 
   private ArrayList<BackendCapability> backendCapabilities = new ArrayList<>();
 
+  private JSONObject exports;
+
   HpssCdmi hpssCdmi = new HpssCdmi();
 
   /**
@@ -46,6 +48,8 @@ public class HpssBackend implements StorageBackend {
   public HpssBackend(Map<String, String> properties) {
 
     JSONObject capabilities = hpssCdmi.readCapabilitiesFromConfig();
+
+    exports = capabilities.getJSONObject("container_exports");
 
     Map<String, Object> containerCapabilities = new HashMap<>();
     JSONObject jsonCapabilities = capabilities.getJSONObject("container_capabilities");
@@ -114,6 +118,7 @@ public class HpssBackend implements StorageBackend {
     BackendCapability capability = null;
     List<String> children = new ArrayList<>();
     String associationTime = "";
+    HashMap<String, Object> exportAttributes = null;
 
     if (json != null) {
       if (json.has("TimeModified")) {
@@ -144,6 +149,11 @@ public class HpssBackend implements StorageBackend {
 
           JSONArray childrenArray = childrenJson.getJSONArray("children");
           childrenArray.forEach(c -> children.add(String.valueOf(c)));
+
+          exportAttributes = new HashMap<>();
+          for (String key : exports.keySet()) {
+            exportAttributes.put(key, exports.get(key));
+          }
 
         } else if (type.equals("File")) {
 
@@ -205,14 +215,12 @@ public class HpssBackend implements StorageBackend {
 
     metadata.put("cdmi_capability_association_time", associationTime);
 
-    JSONObject exports = new JSONObject();
-    exports.put("identifier", "/hpss");
-    exports.put("permissions", "domain");
-    HashMap<String, Object> exportAttributes = new HashMap<>();
-    exportAttributes.put("Network/WebDAV", exports);
     CdmiObjectStatus currentStatus =
         new CdmiObjectStatus(metadata, currentCapabilitiesUri, targetCapabilitiesUri);
-    currentStatus.setExportAttributes(exportAttributes);
+
+    if (exportAttributes != null && !exportAttributes.isEmpty()) {
+      currentStatus.setExportAttributes(exportAttributes);
+    }
 
     if (!children.isEmpty()) {
       currentStatus.setChildren(children);

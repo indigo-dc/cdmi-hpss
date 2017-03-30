@@ -1,4 +1,10 @@
 {
+	"container_exports": {
+		"Network/WebHTTP": {
+			"identifier": "http://localhost/cdmi/browse",
+			"permissions": "oidc"
+		}
+	},
 	"container_capabilities": {
 		"cdmi_export_container_webdav": true,
 		"cdmi_capabilities_templates": true,
