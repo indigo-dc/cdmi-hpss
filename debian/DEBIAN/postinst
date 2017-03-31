@@ -1,0 +1,21 @@
+#!/bin/sh
+
+NAME=cdmi-hpss
+VERSION=1.2
+
+count=`egrep -c "^${USER}:" /etc/group`
+if [ $count -eq 0 ]; then
+  echo "No ${USER} group found ... create group"
+  addgroup --system $USER
+fi
+
+/usr/bin/id -u $USER > /dev/null 2>&1
+if [ $? -eq 1 ]; then
+  echo "No ${USER} user found .. create user"
+  adduser --system $USER --ingroup $USER
+fi
+
+chown -R $USER:$USER /var/lib/$NAME/
+chown -R $USER:$USER /usr/lib/cdmi-server/plugins/
+chown -R $USER:$USER /etc/cdmi-server/plugins/
+

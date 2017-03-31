@@ -1,0 +1,11 @@
+Package: cdmi-hpss
+Version: 1.2
+Section: web
+Priority: optional
+Architecture: all
+Maintainer: INDIGO DataCloud
+Depends: java8-runtime, cdmi-server
+Description: HPSS back-end module for the INDIGO DataCloud CDMI server.
+ .
+ Java Service Provider Interface (SPI) module.
+ .
