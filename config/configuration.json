@@ -1,0 +1,10 @@
+{
+	"rest_user": "",
+	"rest_password": "",
+	"hpssgetxattrs": "",
+	"hpssstat": "",
+	"hpssgetvol": "",
+	"hpssstage": "",
+	"hpsspurge": "",
+	"hpssls": ""
+}

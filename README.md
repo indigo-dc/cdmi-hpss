@@ -3,7 +3,7 @@ Java Service Provider implementation for CDMI HPSS storage back-end
 
 ## Maven
 ### Latest Release (Stable)
-TBA
+1.2
 
 ## Requirements
 
@@ -16,14 +16,11 @@ The project uses the Maven build automation tool.
 You can build the project with
 ```
 mvn clean package
+mvn -DdescriptorId=jar-with-dependencies assembly:single
 ```
 
 To use the cdmi-hpss SPI implementation you need to included this module at runtime of the CDMI server, e.g.
 
 ```
-java -classpath .:cdmi-hpss.jar -jar cdmi-server.jar
-```
-or
-```
-java -Djava.ext.dirs=cdmi-hpss/target -jar cdmi-server.jar
+JAVA_OPTS="-Djava.ext.dirs=target -Dcdmi.hpss.config=config" ./cdmi-server-1.2.jar
 ```
