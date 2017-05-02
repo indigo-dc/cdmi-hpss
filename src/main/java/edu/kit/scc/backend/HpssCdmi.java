@@ -12,10 +12,11 @@ package edu.kit.scc.backend;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -156,7 +157,10 @@ public class HpssCdmi {
     String authorization = "Basic " + Base64.getEncoder().encodeToString(str.getBytes());
     log.info("Authorization {}", authorization);
 
-    CloseableHttpClient httpclient = HttpClients.createDefault();
+    RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
+    CloseableHttpClient httpclient =
+        HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+
     HttpGet httpGet = new HttpGet(url);
     Header authorizationHeader = new BasicHeader("Authorization", authorization);
     httpGet.addHeader(authorizationHeader);
