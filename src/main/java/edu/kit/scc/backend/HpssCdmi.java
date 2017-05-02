@@ -157,7 +157,8 @@ public class HpssCdmi {
     String authorization = "Basic " + Base64.getEncoder().encodeToString(str.getBytes());
     log.info("Authorization {}", authorization);
 
-    RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
+    RequestConfig requestConfig =
+        RequestConfig.custom().setConnectionRequestTimeout(5 * 1000).build();
     CloseableHttpClient httpclient =
         HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 
@@ -208,14 +209,18 @@ public class HpssCdmi {
       log.warn(ex.getMessage());
     } finally {
       try {
-        response.close();
+        if (response != null) {
+          response.close();
+        }
       } catch (IOException ex) {
         // ex.printStackTrace();
         log.warn(ex.getMessage());
       }
       if (buffReader != null) {
         try {
-          buffReader.close();
+          if (buffReader != null) {
+            buffReader.close();
+          }
         } catch (IOException ex) {
           // ex.printStackTrace();
           log.warn(ex.getMessage());

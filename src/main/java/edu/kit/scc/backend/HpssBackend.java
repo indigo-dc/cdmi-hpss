@@ -18,9 +18,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.security.AccessController;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
+
+import javax.security.auth.Subject;
 
 public class HpssBackend implements StorageBackend {
 
@@ -111,9 +112,13 @@ public class HpssBackend implements StorageBackend {
 
   @Override
   public CdmiObjectStatus getCurrentStatus(String path) throws BackEndException {
-
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    log.info("Current status requested with authentication: " + authentication.toString());
+    Subject current = Subject.getSubject(AccessController.getContext());
+    if (current != null) {
+      log.info("Current status requested with authentication: " + current.toString());
+    }
+    //
+    // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    // log.info("Current status requested with authentication: " + authentication.toString());
 
     JSONObject json = hpssCdmi.getXattrsFromBackEnd(path);
 
