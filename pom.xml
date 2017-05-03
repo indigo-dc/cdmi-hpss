@@ -20,21 +20,6 @@
 		</license>
 	</licenses>
 
-	<repositories>
-		<repository>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</releases>
-			<id>SCC-KIT</id>
-			<name>SCC</name>
-			<url>http://cdmi-qos.data.kit.edu/maven/</url>
-			<layout>default</layout>
-		</repository>
-	</repositories>
-
-
 	<build>
 		<resources>
 			<resource>
@@ -116,6 +101,20 @@
 						<goals>
 							<goal>check</goal>
 						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>PACKAGE</element>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.50</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
